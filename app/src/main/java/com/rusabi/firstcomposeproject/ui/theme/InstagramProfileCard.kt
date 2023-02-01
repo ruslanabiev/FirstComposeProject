@@ -1,33 +1,34 @@
 package com.rusabi.firstcomposeproject.ui.theme
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarDefaults.backgroundColor
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rusabi.firstcomposeproject.R
 
 @Composable
-fun InstagramProfileCard() {
+fun InstagramProfileCard(
+    viewModel: MainViewModel
+) {
+
+    val isFollowed: State<Boolean> = viewModel.isFollowing.observeAsState(false)
 
     Card(
         modifier = Modifier.padding(8.dp),
@@ -39,10 +40,7 @@ fun InstagramProfileCard() {
         border = BorderStroke(1.dp, MaterialTheme.colors.onBackground)
     )
     {
-        Column(
-
-        ) {
-
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -64,12 +62,10 @@ fun InstagramProfileCard() {
                 UserStatistics(title = "Followers", value = "436M")
                 UserStatistics(title = "Following", value = "76")
             }
-
             Column(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-//                val mContext = LocalContext.current
                 Text(
                     text = "Instagram",
                     fontSize = 32.sp,
@@ -83,26 +79,37 @@ fun InstagramProfileCard() {
                     text = "www.facebook.com/emotional_health",
                     fontSize = 14.sp,
                 )
-                Button(
-                    onClick = {
-//                        Toast.makeText(
-//                            mContext,
-//                            "This is a Sample Toast",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-                    }
-                ) {
-                    Text(text = "Follow")
+                FollowButton(isFollowed = isFollowed.value) {
+                    viewModel.changeFollowingStatus()
                 }
+
             }
         }
+    }
+}
 
+@Composable
+private fun FollowButton(
+    isFollowed: Boolean,
+    clickListener: () -> Unit
+) {
+    Button(
+        onClick = { clickListener() },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor =
+            if (isFollowed) {
+                MaterialTheme.colors.primary.copy(alpha = 0.5f)
+            } else {
+                MaterialTheme.colors.primary
+            }
+        )
+    ) {
+        Text(text = if (isFollowed) "UnFollowed" else "Follow")
     }
 }
 
 @Composable
 private fun UserStatistics(title: String, value: String) {
-
     Column(
         modifier = Modifier
             .height(80.dp),
@@ -114,27 +121,9 @@ private fun UserStatistics(title: String, value: String) {
             fontSize = 24.sp,
             fontFamily = FontFamily.Cursive
         )
-
         Text(
             text = title,
             fontWeight = FontWeight.Bold
         )
-
-    }
-}
-
-@Preview
-@Composable
-fun PreviewCardLite() {
-    FirstComposeProjectTheme(darkTheme = false) {
-        InstagramProfileCard()
-    }
-}
-
-@Preview
-@Composable
-fun PreviewCardDark() {
-    FirstComposeProjectTheme(darkTheme = true) {
-        InstagramProfileCard()
     }
 }
