@@ -1,4 +1,4 @@
-package com.rusabi.firstcomposeproject.ui.theme
+package com.rusabi.firstcomposeproject
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
